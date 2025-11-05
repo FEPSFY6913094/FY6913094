@@ -9,7 +9,40 @@
   async function get LastUpdatedTime() {
     const Username = 'rc01628';
     const repo = 'FY6913094';
-    const url
+    const url = 'https://api.github.com/repos/${rc01628}/${FY6913094}/commits';
+
+    try{
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/vnd.github.v3+json',
+        }
+      });
+      if (!response.ok){
+        throw new Error('Error fetching data: ${response.status}-${response.statusText}');
+      }
+        const commits = await response.json();
+      if(commits && commits.length >0) {
+        const lastcommitDate = new Date (commits[0].commit.comitter.date);
+        //Displaying the time on load
+        document.getElementById('last-updated').innerText = 'Last Modified Time: ${lastCommitDate.toLocaleString()}';
+      } else{
+        document.getElementById('last-updated').innerText = 'No commits found in the repository.';
+      }
+    }catch (error){
+      console.error('Error fetching the last updated time:',error);
+      document.getElementById('last-updated').innerText= 'Error fetching update time. Please check the repository details .';
+    }
+  }
+  //function to verify the last update time by re-fetching it from the API
+  async fuction verifyLastupdatedTime(){
+    document.getElementById('last-updated').innerText = 'Verifying...';
+    await getLastUpdatedTime();
+    alert("Last modified time has been sucessfully verified from Github API.");
+  }
+  //Initial load to display the time on page load
+  window.onload =  getLastUpdatedTime;
+</script>
   
 
 <html>
